@@ -29,7 +29,7 @@ def filter_by_state(
         operations: list[dict[str, any]],
         state: str = "EXECUTED"
 ) -> list[dict[str, any]]:
-    """Фильтрует список словарей по значениб state"""
+    """Функция, которая фильтрует список словарей по значению state"""
     result = []
     for operation in operations:
         if operation.get("state") == state:
@@ -45,7 +45,7 @@ def sort_by_date(
     data: list[Dict[str, Any]],
     reverse: bool = True
 ) -> list[Dict[str, Any]]:
-    """Сортирует список словарей по дате"""
+    """Функция, которая сортирует список словарей по дате"""
     return sorted(data, key=lambda x: x['date'], reverse=reverse)
 
 # print(sort_by_date(operations))
