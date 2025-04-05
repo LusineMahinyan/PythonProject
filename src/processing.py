@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Dict, List
 
 
 operations = [
@@ -26,9 +26,9 @@ operations = [
 
 
 def filter_by_state(
-        operations: list[dict[str, any]],
+        operations: List[Dict[str, Any]],
         state: str = "EXECUTED"
-) -> list[dict[str, any]]:
+) -> List[Dict[str, Any]]:
     """Функция, которая фильтрует список словарей по значению state"""
     result = []
     for operation in operations:
