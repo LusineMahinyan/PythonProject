@@ -6,6 +6,7 @@ transactions = [
                 ]
 
 def filter_by_state(transactions, state="state"):
+    """Фильтрует список словарей по значениб state"""
     result = []
     for transaction in transactions:
         if transaction.get("state") == state:
@@ -16,5 +17,9 @@ def filter_by_state(transactions, state="state"):
 # print(filter_by_state(transactions, state="CANCELED"))
 
 
+def sort_by_date(data: list[dict], reverse=True) -> list[dict]:
+    """Сортирует список словарей по дате"""
+    return sorted(data, key=lambda x: x['date'], reverse=reverse)
 
+# print(sort_by_date(transactions))
 
