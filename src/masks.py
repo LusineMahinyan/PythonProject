@@ -3,7 +3,9 @@ from typing import Union
 
 
 def get_mask_card_number(card_number: Union[str, int]) -> str:
-    """Функция маскировки номера банковской карты"""
+    """Функция маскировки номера банковской карты
+    :rtype: object
+    """
     card_number_str = str(card_number).strip()
     digits = card_number_str.replace(" ", "").replace("-", "")
 
@@ -15,7 +17,7 @@ def get_mask_card_number(card_number: Union[str, int]) -> str:
     return f"{digits[:4]} {digits[4:6]}** **** {digits[-4:]}"
 
 
-def get_mask_account(account_number: int) -> str:
+def get_mask_account(account_number: Union[int, str]) -> str:
     """Функция, которая принимает на вход номер счета и возвращает его маску"""
     account_number_str = str(account_number).strip()
     digits_1 = account_number_str.replace(" ", "").replace("-", "")
@@ -26,5 +28,3 @@ def get_mask_account(account_number: int) -> str:
         raise ValueError("Номер счёта должен содержать 20 цифр")
 
     return "**" + digits_1[-4:]
-
-print(get_mask_account("64686473678894779589"))
