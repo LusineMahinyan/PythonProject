@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, List
 
 
@@ -37,15 +38,58 @@ def filter_by_state(
     return result
 
 
-# print(filter_by_state(operations, state="EXECUTED"))
-# print(filter_by_state(operations, state="CANCELED"))
+def sort_by_date(data: list[Dict[str, Any]], reverse: bool = True) -> list[Dict[str, Any]]:
+    """Функция, которая сортирует список словарей по дате с валидацией"""
 
+    def validate_and_parse_date(date_str: str) -> datetime:
+        if not isinstance(date_str, str):
+            raise TypeError(f"Expected string, got {type(date_str)}")
+        if not date_str:
+            raise ValueError("Date string cannot be empty")
 
-def sort_by_date(
-    data: list[Dict[str, Any]],
-    reverse: bool = True
-) -> list[Dict[str, Any]]:
-    """Функция, которая сортирует список словарей по дате"""
-    return sorted(data, key=lambda x: x['date'], reverse=reverse)
+        # Проверяем базовую структуру ISO формата
+        if 'T' not in date_str:
+            raise ValueError(f"Invalid ISO date format: {date_str}")
 
-# print(sort_by_date(operations))
+        # Разбираем дату вручную
+        date_part, time_part = date_str.split('T', 1)
+
+        # Проверяем дату
+        date_components = date_part.split('-')
+        if len(date_components) != 3:
+            raise ValueError(f"Invalid date format: {date_str}")
+
+        year, month, day = date_components
+        if not (year.isdigit() and month.isdigit() and day.isdigit()):
+            raise ValueError(f"Invalid date format: {date_str}")
+
+        # Проверяем время
+        time_components = time_part.split(':')
+        if len(time_components) < 3:
+            raise ValueError(f"Invalid time format: {date_str}")
+
+        hour, minute, second = time_components[:3]
+        if not (hour.isdigit() and minute.isdigit()):
+            raise ValueError(f"Invalid time format: {date_str}")
+
+        # Проверяем секунды
+        if '.' in second:
+            sec, micro = second.split('.', 1)
+            if not (sec.isdigit() and micro.isdigit()):
+                raise ValueError(f"Invalid time format: {date_str}")
+        elif not second.isdigit():
+            raise ValueError(f"Invalid time format: {date_str}")
+
+        # Если все проверки пройдены, создаем datetime объект
+        return datetime(
+            year=int(year),
+            month=int(month),
+            day=int(day),
+            hour=int(hour),
+            minute=int(minute),
+            second=int(second.split('.')[0]),
+            microsecond=int(second.split('.')[1]) if '.' in second else 0
+        )
+
+    return sorted(data, key=lambda x: validate_and_parse_date(x['date']), reverse=reverse)
+
