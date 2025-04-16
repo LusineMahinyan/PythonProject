@@ -1,5 +1,8 @@
+from typing import Any, Union
+
 import pytest
-from src.masks import get_mask_card_number, get_mask_account
+
+from src.masks import get_mask_account, get_mask_card_number
 
 
 @pytest.mark.parametrize("card_number, expected", [
@@ -8,7 +11,10 @@ from src.masks import get_mask_card_number, get_mask_account
     ("7158-3007-3472-6758", "7158 30** **** 6758"),
     ("7158 3007 3472 6758", "7158 30** **** 6758"),
 ])
-def test_get_mask_card_number(card_number, expected):
+def test_get_mask_card_number(
+        card_number: str,
+        expected: str
+) -> None:
     assert get_mask_card_number(card_number) == expected
 
 
@@ -18,7 +24,7 @@ def test_get_mask_card_number(card_number, expected):
     "1234-5678-9012-ABCD",
     " "
 ])
-def test_invalid_card_number(invalid_card_number):
+def test_invalid_card_number(invalid_card_number: Any) -> None:
     with pytest.raises(ValueError):
         get_mask_card_number(invalid_card_number)
 
@@ -29,7 +35,10 @@ def test_invalid_card_number(invalid_card_number):
     ("6468 6473 6788 9477 9589", "**9589"),
     ("6468-6473-6788-9477-9589", "**9589"),
 ])
-def test_valid_account_numbers(account_number, expected):
+def test_valid_account_numbers(
+        account_number: str,
+        expected: str
+) -> None:
     assert get_mask_account(account_number) == expected
 
 
@@ -39,6 +48,8 @@ def test_valid_account_numbers(account_number, expected):
     "",
     "12 34 56 78 9",
 ])
-def test_invalid_account_number(invalid_account_number):
+def test_invalid_account_number(
+        invalid_account_number: Union
+) -> None:
     with pytest.raises(ValueError):
         get_mask_account(invalid_account_number)

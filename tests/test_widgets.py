@@ -1,6 +1,9 @@
-import pytest
 import time
-from src.widgets import mask_account_card, get_date
+from typing import Any, Type
+
+import pytest
+
+from src.widgets import get_date, mask_account_card
 
 
 @pytest.mark.parametrize("string, expected", [
@@ -13,7 +16,7 @@ from src.widgets import mask_account_card, get_date
     ("Счет 11112222333344445555", "Счет **5555"),
     ("Сберегательный счет 12345678901234567890", "Сберегательный счет **7890"),
 ])
-def test_valid_masking(string, expected):
+def test_valid_masking(string: str, expected: str) -> None:
     assert mask_account_card(string) == expected
 
 
@@ -30,12 +33,12 @@ def test_valid_masking(string, expected):
     ("1234567890123456", "Отсутствует название"),
     ("", "Передана пустая строка"),
 ])
-def test_invalid_input(string, expected):
+def test_invalid_input(string: str, expected: str) -> None:
     with pytest.raises(ValueError):
         mask_account_card(string)
 
 
-def test_performance_large_input():
+def test_performance_large_input() -> None:
     """Тест производительности на больших входных данных"""
     large_input = "Карта " + "1" * 10000  # 10000 цифр
 
@@ -68,7 +71,7 @@ def test_performance_large_input():
     ("2023-06-15T12:34:56.789", "15.06.2023"),
     ("2023-06-15T12:34:56+03:00", "15.06.2023"),
 ])
-def test_valid_date_formats(date_time, expected):
+def test_valid_date_formats(date_time: str, expected: str) -> None:
     """Проверка корректного преобразования валидных дат"""
     assert get_date(date_time) == expected
 
@@ -78,7 +81,7 @@ def test_valid_date_formats(date_time, expected):
     ("2020-02-29T00:00:00", "29.02.2020"),  # Високосный год
     ("1999-01-01T12:00:00", "01.01.1999"),
 ])
-def test_valid_dates(date_time, expected):
+def test_valid_dates(date_time: str, expected: str) -> None:
     """Проверка корректного преобразования валидных дат"""
     assert get_date(date_time) == expected
 
@@ -99,10 +102,11 @@ def test_valid_dates(date_time, expected):
     (None, TypeError, "Ожидается строка"),
     (1234567890, TypeError, "Ожидается строка"),
 ])
-def test_invalid_inputs(date_time, error_type, error):
+def test_invalid_inputs(
+    date_time: Any,
+    error_type: Type[Exception],
+    error: str
+) -> None:
     """Проверка обработки некорректных входных данных"""
     with pytest.raises(error_type):
         get_date(date_time)
-
-
-

@@ -1,4 +1,5 @@
 from typing import Union
+
 from src.masks import get_mask_account, get_mask_card_number
 
 
@@ -20,7 +21,7 @@ def mask_account_card(string: Union[str, int]) -> str:
     name = parts[0]
     number_part = parts[1]
 
-    cleaned_number = ''
+    cleaned_number = ""
     for symbol in number_part:
         if symbol.isdigit():
             cleaned_number += symbol
@@ -35,7 +36,7 @@ def mask_account_card(string: Union[str, int]) -> str:
         masked_number = get_mask_account(cleaned_number)
     else:
         required = "16 (для карты)" if len(cleaned_number) < 16 else "20 (для счета)"
-        raise ValueError(f"Номер должен содержать {required} цифр. Получено: {len(cleaned_number)}")
+        raise ValueError(f"Номер должен содержать {required} цифр. " f"Получено: {len(cleaned_number)}")
 
     return f"{name} {masked_number}"
 
@@ -49,11 +50,11 @@ def get_date(date_time: str) -> str:
         raise ValueError("Пустая строка с датой")
 
     # Проверка формата (минимум 10 символов и правильные разделители)
-    if len(date_time) < 10 or date_time[4] != '-' or date_time[7] != '-':
+    if len(date_time) < 10 or date_time[4] != "-" or date_time[7] != "-":
         raise ValueError("Неверный формат даты. Ожидается ГГГГ-ММ-ДДTHH:MM:SS")
 
     # Проверка наличия разделителя времени
-    if 'T' not in date_time:
+    if "T" not in date_time:
         raise ValueError("Неверный формат даты. Отсутствует разделитель 'T'")
 
     # Извлечение компонентов даты
