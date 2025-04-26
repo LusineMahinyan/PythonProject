@@ -1,16 +1,29 @@
-def get_mask_card_number(card_number: int) -> str:
-    """Функция маскировки номера банковской карты"""
-    card_number_str = str(card_number)
-    return f"{card_number_str[:4]} {card_number_str[4:6]}** **** {card_number_str[-4:]}"
+from typing import Union
 
 
-# print(get_mask_card_number(7000792289606361))
+def get_mask_card_number(card_number: Union[str, int]) -> str:
+    """Функция маскировки номера банковской карты
+    :rtype: object
+    """
+    card_number_str = str(card_number).strip()
+    digits = card_number_str.replace(" ", "").replace("-", "")
+
+    if not digits.isdigit():
+        raise ValueError("Номер карты должен содержать только цифры")
+    if len(digits) != 16:
+        raise ValueError("Номер карты должен содержать 16 цифр")
+
+    return f"{digits[:4]} {digits[4:6]}** **** {digits[-4:]}"
 
 
-def get_mask_account(account_number: int) -> str:
+def get_mask_account(account_number: Union[int, str]) -> str:
     """Функция, которая принимает на вход номер счета и возвращает его маску"""
-    account_number_str = str(account_number)
-    return "**" + account_number_str[-4:]
+    account_number_str = str(account_number).strip()
+    digits_1 = account_number_str.replace(" ", "").replace("-", "")
 
+    if not digits_1.isdigit():
+        raise ValueError("Номер счёта должен содержать только цифры")
+    if len(digits_1) != 20:
+        raise ValueError("Номер счёта должен содержать 20 цифр")
 
-# print(get_mask_account(73654108430135874305))
+    return "**" + digits_1[-4:]
