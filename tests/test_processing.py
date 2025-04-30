@@ -3,11 +3,14 @@ import pytest
 from src.processing import filter_by_state, operations, sort_by_date
 
 
-@pytest.mark.parametrize("state, expected_count", [
-    ("EXECUTED", 2),
-    ("CANCELED", 2),
-    ("PENDING", 0),  # тест для несуществующего статуса
-])
+@pytest.mark.parametrize(
+    "state, expected_count",
+    [
+        ("EXECUTED", 2),
+        ("CANCELED", 2),
+        ("PENDING", 0),  # тест для несуществующего статуса
+    ],
+)
 def test_filter_by_state(state: str, expected_count: int) -> None:
     """Тестирование фильтрации операций по статусу"""
     filtered_ops = filter_by_state(operations, state)
@@ -37,14 +40,17 @@ test_data = [
 ]
 
 
-@pytest.mark.parametrize("reverse, expected_order", [
-    (True, [1, 3, 2, 4]),  # Сортировка по убыванию (новые сначала)
-    (False, [4, 2, 1, 3]),  # Сортировка по возрастанию (старые сначала)
-])
+@pytest.mark.parametrize(
+    "reverse, expected_order",
+    [
+        (True, [1, 3, 2, 4]),  # Сортировка по убыванию (новые сначала)
+        (False, [4, 2, 1, 3]),  # Сортировка по возрастанию (старые сначала)
+    ],
+)
 def test_sort_by_date_direction(
-        reverse: bool,
-        expected_order: list[int]
-) -> None:
+        reverse: bool, expected_order: list[int]
+)\
+        -> None:
     """Тестирование сортировки по дате в разных направлениях"""
     sorted_data = sort_by_date(test_data, reverse=reverse)
     assert [item["id"] for item in sorted_data] == expected_order
@@ -69,12 +75,15 @@ def test_sort_by_date_single_item() -> None:
     assert sort_by_date(single_item) == single_item
 
 
-@pytest.mark.parametrize("invalid_date", [
-    "invalid-date-format",  # Неправильный формат даты
-    "2023/01/01 12:00:00",  # Нестандартный формат
-    "",  # Пустая строка
-    None,  # None вместо даты
-])
+@pytest.mark.parametrize(
+    "invalid_date",
+    [
+        "invalid-date-format",  # Неправильный формат даты
+        "2023/01/01 12:00:00",  # Нестандартный формат
+        "",  # Пустая строка
+        None,  # None вместо даты
+    ],
+)
 def test_sort_by_date_invalid_formats(invalid_date: str) -> None:
     """Тестирование обработки некорректных форматов дат"""
     test_data_with_invalid = [
