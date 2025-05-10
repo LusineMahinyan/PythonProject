@@ -44,7 +44,7 @@ def mask_account_card(string: Union[str, int]) -> str:
             required = f"{account_digits} (для счета)"
         raise ValueError(
             f"Номер должен содержать {required} цифр. "
-            f"Получено: {len(cleaned_number)}"
+            f"" f"Получено: {len(cleaned_number)}"
         )
     return f"{name} {masked_number}"
 
@@ -71,8 +71,7 @@ def get_date(date_time: str) -> str:
     day_part = date_time[8:10]
 
     # Проверка, что компоненты являются числами
-    if not (year_part.isdigit() and month_part.isdigit()
-            and day_part.isdigit()):
+    if not (year_part.isdigit() and month_part.isdigit() and day_part.isdigit()):
         raise ValueError("Год, месяц и день должны быть числами")
 
     year = int(year_part)
