@@ -3,9 +3,15 @@ from datetime import datetime
 
 
 def log(filename=None):
+    """Декоратор для логирования вызовов функций, их результатов и ошибок.
+
+        Логирует начало и конец выполнения функции, а также возникшие ошибки.
+        Результаты могут записываться в файл или выводиться в консоль.
+    """
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            """Обёртка для логирования вызова функции."""
             func_name = func.__name__
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -35,8 +41,10 @@ def log(filename=None):
 
     return decorator
 
+
 @log(filename="mylog.txt")
 def my_function(x, y):
     return x + y
+
 
 my_function(1, 2)
