@@ -1,9 +1,12 @@
 from typing import Dict, Optional
-from src.external_api import convert_to_rub
+import requests
 
 
-def get_transaction_amount_rub(transaction: Dict) -> Optional[float]:
-    """Возвращает сумму транзакции в рублях."""
+def convert_to_rub(transaction: Dict) -> Optional[float]:
+    """
+    Конвертирует сумму транзакции в рубли по текущему курсу.
+    Принимает словарь транзакции с полями amount и currency.
+    """
     try:
         amount = float(transaction["amount"])
         currency = transaction.get("currency", "RUB").upper()
@@ -11,8 +14,20 @@ def get_transaction_amount_rub(transaction: Dict) -> Optional[float]:
         if currency == "RUB":
             return amount
 
-        return convert_to_rub(amount, currency)
+        url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency}&amount={amount}"
 
-    except (KeyError, ValueError, TypeError) as e:
-        print(f"Ошибка обработки транзакции: {e}")
+        headers = {"apikey": "M1LLZJPXXDuhFHdr4F48OF8kytXSxWfD"}
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        data = response.json()
+        return data.get("result")
+
+    except (KeyError, ValueError, TypeError, requests.exceptions.RequestException) as e:
+        print(f"Ошибка при конвертации валюты: {e}")
         return None
+
+
+def get_transaction_amount_rub(transaction: Dict) -> Optional[float]:
+    """Возвращает сумму транзакции в рублях."""
+    return convert_to_rub(transaction)
