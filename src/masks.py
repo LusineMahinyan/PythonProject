@@ -11,7 +11,7 @@ logger.addHandler(file_handler)
 
 def get_mask_card_number(card_number: Union[str, int]) -> str:
     """Функция маскировки номера банковской карты"""
-    logging.debug("Начало маскировки номера банковской карты.")
+    logger.debug("Начало маскировки номера банковской карты.")
     try:
         card_number_str = str(card_number).strip()
         digits = card_number_str.replace(" ", "").replace("-", "")
