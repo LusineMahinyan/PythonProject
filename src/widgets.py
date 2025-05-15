@@ -42,10 +42,7 @@ def mask_account_card(string: Union[str, int]) -> str:
             required = f"{card_digits} (для карты)"
         else:
             required = f"{account_digits} (для счета)"
-        raise ValueError(
-            f"Номер должен содержать {required} цифр. "
-            f"" f"Получено: {len(cleaned_number)}"
-        )
+        raise ValueError(f"Номер должен содержать {required} цифр. " f"" f"Получено: {len(cleaned_number)}")
     return f"{name} {masked_number}"
 
 
