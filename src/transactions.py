@@ -1,8 +1,9 @@
 from typing import Dict, Optional
+
 import requests
 
 
-def convert_to_rub(transaction: Dict) -> Optional[float]:
+def convert_to_rub(transaction: Dict[str, str]) -> Optional[float]:
     """
     Конвертирует сумму транзакции в рубли по текущему курсу.
     Принимает словарь транзакции с полями amount и currency.
@@ -21,7 +22,11 @@ def convert_to_rub(transaction: Dict) -> Optional[float]:
         response.raise_for_status()
 
         data = response.json()
-        return data.get("result")
+        result = data.get("result")
+        if result is None:
+            return None
+
+        return float(result)
 
     except (KeyError, ValueError, TypeError, requests.exceptions.RequestException) as e:
         print(f"Ошибка при конвертации валюты: {e}")
