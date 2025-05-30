@@ -1,6 +1,4 @@
 import unittest
-from io import StringIO
-from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pandas as pd
@@ -9,42 +7,42 @@ from src.readers import read_financial_transactions, read_financial_transactions
 
 
 class TestReadFinancialTransactions(unittest.TestCase):
+    """Тесты для функции read_financial_transactions с использованием Mock и patch."""
 
     @patch("pandas.read_csv")
-    def test_read_csv_success(self, mock_read_csv: Any) -> None:
-        mock_df = pd.DataFrame({"date": ["2024-01-01"], "amount": [100]})
+    def test_read_csv_success(self, mock_read_csv: MagicMock) -> None:
+        """Успешное чтение CSV: возвращается список словарей."""
+        mock_df = MagicMock(spec=pd.DataFrame)
+        mock_df.to_dict.return_value = [{"date": "2024-01-01", "amount": 100}]
         mock_read_csv.return_value = mock_df
-
         result = read_financial_transactions("dummy.csv")
-        self.assertIsNotNone(result)
-
-        assert result is not None
-        self.assertTrue(result.equals(mock_df))
         mock_read_csv.assert_called_once_with("dummy.csv", sep=";", encoding="utf-8")
+        mock_df.to_dict.assert_called_once_with("records")
+        self.assertEqual(result, [{"date": "2024-01-01", "amount": 100}])
 
     @patch("pandas.read_csv", side_effect=FileNotFoundError)
-    def test_file_not_found(self, mock_read_csv: Any) -> None:
+    def test_file_not_found_error(self, mock_read_csv: MagicMock) -> None:
+        """Обработка ошибки FileNotFoundError."""
         result = read_financial_transactions("missing.csv")
         self.assertIsNone(result)
-        mock_read_csv.assert_called_once()
+        mock_read_csv.assert_called_once_with("missing.csv", sep=";", encoding="utf-8")
 
-    @patch("pandas.read_csv", side_effect=ValueError("invalid CSV"))
-    def test_generic_exception(self, mock_read_csv: Any) -> None:
-        result = read_financial_transactions("bad.csv")
+    @patch("pandas.read_csv", side_effect=Exception("Invalid CSV"))
+    def test_generic_error_handling(self, mock_read_csv: MagicMock) -> None:
+        """Обработка прочих ошибок."""
+        result = read_financial_transactions("corrupted.csv")
         self.assertIsNone(result)
-        mock_read_csv.assert_called_once()
+        mock_read_csv.assert_called_once_with("corrupted.csv", sep=";", encoding="utf-8")
 
-    def test_read_csv_with_stringio(self) -> None:
-        csv_data = "date;amount\n2024-01-01;100"
-        csv_file = StringIO(csv_data)
+    @patch("pandas.read_csv")
+    def test_empty_csv_returns_empty_list(self, mock_read_csv: MagicMock) -> None:
+        """Пустой CSV должен возвращать пустой список."""
+        mock_df = MagicMock(spec=pd.DataFrame)
+        mock_df.to_dict.return_value = []
+        mock_read_csv.return_value = mock_df
 
-        with patch("pandas.read_csv", return_value=pd.read_csv(csv_file, sep=";", encoding="utf-8")) as mock_read:
-            result = read_financial_transactions("dummy.csv")
-            self.assertIsNotNone(result)  # Для unittest
-            assert result is not None  # Для mypy
-
-            self.assertEqual(result.iloc[0]["amount"], 100)
-            mock_read.assert_called_once_with("dummy.csv", sep=";", encoding="utf-8")
+        result = read_financial_transactions("empty.csv")
+        self.assertEqual(result, [])
 
 
 class TestReadFinancialTransactionsExcel(unittest.TestCase):
