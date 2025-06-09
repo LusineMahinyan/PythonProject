@@ -47,10 +47,7 @@ test_data = [
         (False, [4, 2, 1, 3]),  # Сортировка по возрастанию (старые сначала)
     ],
 )
-def test_sort_by_date_direction(
-        reverse: bool, expected_order: list[int]
-)\
-        -> None:
+def test_sort_by_date_direction(reverse: bool, expected_order: list[int]) -> None:
     """Тестирование сортировки по дате в разных направлениях"""
     sorted_data = sort_by_date(test_data, reverse=reverse)
     assert [item["id"] for item in sorted_data] == expected_order

@@ -12,6 +12,7 @@ class TestTransactions(unittest.TestCase):
         transaction = {"amount": "100", "currency": "USD"}
 
         from src.transactions import convert_to_rub
+
         result = convert_to_rub(transaction)
 
         self.assertEqual(result, 7500.0)

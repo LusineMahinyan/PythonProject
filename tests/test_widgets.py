@@ -15,8 +15,7 @@ from src.widgets import get_date, mask_account_card
         ("Maestro 1234567890123456", "Maestro 1234 56** **** 3456"),
         # Тесты для счетов (20 цифр)
         ("Счет 11112222333344445555", "Счет **5555"),
-        ("Сберегательный счет 12345678901234567890",
-         "Сберегательный счет **7890"),
+        ("Сберегательный счет 12345678901234567890", "Сберегательный счет **7890"),
     ],
 )
 def test_valid_masking(string: str, expected: str) -> None:
@@ -52,10 +51,8 @@ def test_performance_large_input() -> None:
     execution_time = time.perf_counter() - start_time
 
     # Универсальная проверка для любого типа ошибки длины
-    assert "цифр. Получено: 10000" in str(exc_info.value), \
-        f"Неожиданное сообщение об ошибке: {str(exc_info.value)}"
-    assert execution_time < 0.1, \
-        f"Слишком долгое выполнение: {execution_time:.4f} сек"
+    assert "цифр. Получено: 10000" in str(exc_info.value), f"Неожиданное сообщение об ошибке: {str(exc_info.value)}"
+    assert execution_time < 0.1, f"Слишком долгое выполнение: {execution_time:.4f} сек"
 
 
 @pytest.mark.parametrize(
@@ -109,9 +106,7 @@ def test_valid_dates(date_time: str, expected: str) -> None:
         (1234567890, TypeError, "Ожидается строка"),
     ],
 )
-def test_invalid_inputs(
-        date_time: Any, error_type: Type[Exception], error: str
-) -> None:
+def test_invalid_inputs(date_time: Any, error_type: Type[Exception], error: str) -> None:
     """Проверка обработки некорректных входных данных"""
     with pytest.raises(error_type):
         get_date(date_time)
