@@ -1,13 +1,11 @@
 import re
-from typing import Dict, List
+from typing import List, Dict, Any
 
 
-def filter_by_description(transactions: List[Dict], keyword: str) -> List[Dict]:
-    """
-    Фильтрация операций по ключевому слову в описании с использованием регулярных выражений.
-    """
-    pattern = re.compile(re.escape(keyword), re.IGNORECASE)
-    return [tx for tx in transactions if pattern.search(tx.get("description", ""))]
+def filter_by_description(data: List[Dict[str, Any]], search_str: str) -> List[Dict[str, Any]]:
+    """Фильтрует список операций по описанию с использованием регулярного выражения (поиск без учёта регистра)."""
+    pattern = re.compile(search_str, re.IGNORECASE)
+    return [item for item in data if "description" in item and pattern.search(item["description"])]
 
 
 def filter_by_status(transactions: List[Dict], status: str) -> List[Dict]:
