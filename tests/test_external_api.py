@@ -46,11 +46,7 @@ class TestExternalAPI(unittest.TestCase):
 
     @patch("os.getenv")
     @patch("requests.get")
-    def test_convert_to_rub_api_error(
-            self,
-            mock_get: MagicMock,
-            mock_getenv: MagicMock
-    ) -> None:
+    def test_convert_to_rub_api_error(self, mock_get: MagicMock, mock_getenv: MagicMock) -> None:
         """Тест обработки ошибки при запросе к API конвертации валют."""
         mock_getenv.return_value = "test_api_key"
         mock_get.side_effect = requests.RequestException("API error")

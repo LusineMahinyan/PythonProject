@@ -32,32 +32,22 @@ def sample_transactions_1() -> List[Dict[str, Any]]:
     ]
 
 
-def test_filters_usd_transactions(
-        sample_transactions_1: List[Dict[str, Any]]
-) \
-        -> None:
+def test_filters_usd_transactions(sample_transactions_1: List[Dict[str, Any]]) -> None:
     """Проверяет, что функция корректно фильтрует USD-транзакции."""
     usd_transactions = list(filter_by_currency(sample_transactions_1, "USD"))
     assert len(usd_transactions) == 2
-    assert all(t["operationAmount"]["currency"]["code"] == "USD"
-               for t in usd_transactions)
+    assert all(t["operationAmount"]["currency"]["code"] == "USD" for t in usd_transactions)
     assert {t["id"] for t in usd_transactions} == {1, 3}
 
 
-def test_filters_eur_transactions(
-        sample_transactions_1: List[Dict[str, Any]]
-) \
-        -> None:
+def test_filters_eur_transactions(sample_transactions_1: List[Dict[str, Any]]) -> None:
     """Проверяет, что функция корректно фильтрует EUR-транзакции."""
     eur_transactions = list(filter_by_currency(sample_transactions_1, "EUR"))
     assert len(eur_transactions) == 1
     assert eur_transactions[0]["id"] == 2
 
 
-def test_no_matching_currency(
-        sample_transactions_1: List[Dict[str, Any]]
-) \
-        -> None:
+def test_no_matching_currency(sample_transactions_1: List[Dict[str, Any]]) -> None:
     """Проверяет, что возвращается пустой список,
     если нет подходящих транзакций."""
     jpy_transactions = list(filter_by_currency(sample_transactions_1, "JPY"))
@@ -72,14 +62,12 @@ def test_empty_transactions_list() -> None:
     assert not result  # Должен вернуться пустой генератор
 
 
-def test_transactions_missing_currency_field() \
-        -> None:
+def test_transactions_missing_currency_field() -> None:
     """Проверяет, что функция не падает,
     если у транзакции нет поля 'currency'."""
     broken_transactions = [
         {"id": 1, "operationAmount": {"amount": 100}},  # Нет currency
-        {"id": 2,
-         "operationAmount": {"currency": {"code": "USD"}}},  # Корректная
+        {"id": 2, "operationAmount": {"currency": {"code": "USD"}}},  # Корректная
     ]
     usd_transactions = list(filter_by_currency(broken_transactions, "USD"))
     assert len(usd_transactions) == 1
@@ -89,12 +77,9 @@ def test_transactions_missing_currency_field() \
 @pytest.fixture
 def sample_transactions() -> List[Dict]:
     return [
-        {"description": "Оплата услуг",
-         "id": 1, "operationAmount": {"currency": {"code": "USD"}}},
-        {"description": "Перевод другу",
-         "id": 2, "operationAmount": {"currency": {"code": "EUR"}}},
-        {"description": "Покупка в магазине",
-         "id": 3, "operationAmount": {"currency": {"code": "USD"}}},
+        {"description": "Оплата услуг", "id": 1, "operationAmount": {"currency": {"code": "USD"}}},
+        {"description": "Перевод другу", "id": 2, "operationAmount": {"currency": {"code": "EUR"}}},
+        {"description": "Покупка в магазине", "id": 3, "operationAmount": {"currency": {"code": "USD"}}},
     ]
 
 
@@ -113,10 +98,7 @@ def test_returns_correct_descriptions(sample_transactions: List[Dict]) -> None:
     ]
 
 
-def test_yields_descriptions_one_by_one(
-        sample_transactions: List[Dict]
-)\
-        -> None:
+def test_yields_descriptions_one_by_one(sample_transactions: List[Dict]) -> None:
     """Проверяет, что функция возвращает описания по одному (генератор)."""
     generator = transaction_descriptions(sample_transactions)
 
