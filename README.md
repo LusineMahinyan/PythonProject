@@ -12,6 +12,24 @@
 3. В файле "widget":\
 -Функция кодировки счета/карты;\
 -Функция для преобразования даты и времени в формат ДД.ММ.ГГГГ.
+4. В файле "generators":\
+-Генератор фильтрует транзакции по коду валюты;\
+-Генератор, который возвращает описания транзакций по очереди;\
+-Генератор номеров банковских карт в формате XXXX XXXX XXXX XXXX.
+5. Файл "decorators":\
+-Декоратор логирования функций\
+-Декоратор `@log` для записи в лог вызовов функций
+их результатов и ошибок с возможностью вывода в консоль или файл.\
+Особенности:\
+-Логирование успешных выполнений функций\
+-Запись ошибок с типом исключения и входными параметрами\
+-Гибкий вывод: в файл или консоль\
+-Сохранение метаданных оригинальной функции\
+-Добавление временных меток к каждой записи
+6. Файл "readers":\
+-Считывает CSV-файл с финансовыми операциями и возвращает `pandas.DataFrame`.\
+В случае ошибки (`FileNotFoundError` или других исключений) выводит сообщение и возвращает `None`.
+
 
 ## Установка и использование:
 1. Клонируйте репозиторий:\
@@ -20,10 +38,37 @@
 ```from masks import get_mask_card_number, get_mask_account```\
 ```from processing import filter_by_state, sort_by_date```\
 ```from widget import mask_account_card, get_date```
+```from generators import card_number_generator, filter_by_currency, transaction_descriptions```
+3. Клонируйте репозиторий:
+```
+git clone https://github.com/yourusername/logging-decorator.git
+cd logging-decorator
+```
 
 ## Функционал
-
-1. Модуль masks.py \
+1. Загрузка данных\
+Пользователь выбирает источник данных:\
+-JSON\
+-CSV\
+-XLSX\
+Для XLSX используется библиотека openpyxl.
+2. Фильтрация по статусу\
+Пользователь вводит статус операций:\
+-EXECUTED\
+-PENDING\
+-CANCELED\
+Фильтрация происходит независимо от регистра (например, executed, Executed, EXECUTED — одно и то же).
+3. Сортировка по дате
+Пользователь может выбрать:\
+Сортировка по возрастанию\
+Сортировка по убыванию
+4. Фильтрация по валюте\
+Пользователь может оставить только рублевые транзакции.
+5. Поиск по описанию\
+Осуществляется фильтрация операций, в которых описание содержит заданное слово или выражение (используется re — регулярные выражения).
+6. Подсчет категорий\
+Можно подсчитать количество операций, соответствующих определенным категориям (например: "оплата", "перевод", "покупка").
+7. Модуль masks.py \
 -get_mask_card_number(card_number: int) -> str \
 Маскирует номер банковской карты, оставляя видимыми первые 6 и последние 4 цифры.\
 Пример: \
@@ -32,7 +77,7 @@
 Маскирует номер счета, оставляя видимыми только последние 4 цифры.\
 Пример: \
 ```get_mask_account(73654108430135874305) #Возвращает "**4305"```
-2. Модуль processing.py\
+8. Модуль processing.py\
 -filter_by_state(
         operations: list[dict[str, any]],
         state: str = "EXECUTED"
@@ -49,7 +94,7 @@
 Пример: \
 ```sort_by_date([{"date": "2023-01-01"}, {"date": "2023-01-02"}])```
 ```#Возвращает "[{"date": "2023-01-02"}, {"date": "2023-01-01"}]"```
-3. Модуль widget.py \
+9. Модуль widget.py \
 -mask_account_card(string: str) -> str \
 Определяет тип финансового инструмента (карта/счет) и применяет соответствующую маскировку. \
 Пример: \
@@ -59,6 +104,56 @@
 Преобразует дату из формата ISO в русский формат (ДД.ММ.ГГГГ). \
 Пример: \
 ```get_date("2024-03-11T02:26:18.671407") #Возвращает "11.03.2024"```
+10. Модуль generators.py \
+Модуль generators.py содержит набор генераторов для работы с банковскими транзакциями и генерации номеров карт.
+-filter_by_currency(transactions, currency_code) -> Iterator[Dict] \
+Фильтрует транзакции по коду валюты. \
+
+Пример: 
+ ```bash
+ usd_transactions = filter_by_currency(transactions, "USD") 
+ for tx in usd_transactions:
+ print(tx["description"]) 
+ ```
+-transaction_descriptions(transactions) -> Iterator[str] \
+Генератор описаний транзакций.
+Пример: 
+```bash
+for desc in transaction_descriptions(transactions):
+    print(desc)
+```
+-card_number_generator(start, end) -> Generator[str, None, None] \
+Генератор номеров банковских карт. \
+Пример: 
+```bash
+for card_num in card_number_generator(1, 5):
+    print(card_num)
+```
+5. Модуль decorators.py \
+Пример:
+```
+from decorator import log
+
+@log()
+def add(a, b):
+    return a + b
+
+add(2, 3)
+```
+Логирование в файл:
+```
+``@log(filename="operations.log")
+def divide(a, b):
+    return a / b
+
+divide(10, 2)
+divide(1, 0)
+```
+Пример содержимого лог-файла:
+```
+2023-12-01 14:31:00 - divide ok. Result: 5.0
+2023-12-01 14:31:05 - divide error: ZeroDivisionError. Inputs: (1, 0), {}
+```
 
 ## Требования
 -Python 3.8+ \
@@ -75,9 +170,20 @@
 tests/ \
 ├── test_masks.py # Тесты маскировок \
 ├── test_widgets.py # Тесты виджетов \
-└── test_processing.py # Тесты обработки данных
-
+├── test_readers.py # Тесты считывания транзакций\
+├── test_processing.py # Тесты обработки данных \
+├── test_generators.py # Генераторы 
+├── test_filters.py       # Тесты фильтрации
+└── test_categories.py    # Тесты подсчета категорий
 ### Запуск тестов
+
 ```bash
 pytest tests/ -v          # Все тесты с подробным выводом
 pytest --cov=src          # С проверкой покрытия кода
+pytest --cov=. --cov-report=html 
+```
+
+
+## 📊 Отчёт о покрытии тестами
+Отчет о покрытии тестами находится в папке [htmlcov](./htmlcov/index.html).
+

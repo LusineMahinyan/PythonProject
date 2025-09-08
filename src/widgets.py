@@ -35,9 +35,14 @@ def mask_account_card(string: Union[str, int]) -> str:
     elif len(cleaned_number) == 20:
         masked_number = get_mask_account(cleaned_number)
     else:
-        required = "16 (для карты)" if len(cleaned_number) < 16 else "20 (для счета)"
-        raise ValueError(f"Номер должен содержать {required} цифр. " f"Получено: {len(cleaned_number)}")
+        card_digits = 16
+        account_digits = 20
 
+        if len(cleaned_number) < card_digits:
+            required = f"{card_digits} (для карты)"
+        else:
+            required = f"{account_digits} (для счета)"
+        raise ValueError(f"Номер должен содержать {required} цифр. " f"" f"Получено: {len(cleaned_number)}")
     return f"{name} {masked_number}"
 
 

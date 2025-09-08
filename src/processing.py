@@ -18,7 +18,10 @@ def filter_by_state(operations: List[Dict[str, Any]], state: str = "EXECUTED") -
     return result
 
 
-def sort_by_date(data: list[Dict[str, Any]], reverse: bool = True) -> list[Dict[str, Any]]:
+def sort_by_date(
+    data: list[Dict[str, Any]],
+    reverse: bool = True,
+) -> list[Dict[str, Any]]:
     """Функция, которая сортирует список словарей по дате с валидацией"""
 
     def validate_and_parse_date(date_str: str) -> datetime:
